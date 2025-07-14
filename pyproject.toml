@@ -1,0 +1,27 @@
+[project]
+name = "sora-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "blinker==1.7.0",
+    "fake-useragent>=2.2.0",
+    "fastapi>=0.116.1",
+    "loguru>=0.7.3",
+    "markdownify>=1.1.0",
+    "pydantic>=2.11.7",
+    "pyyaml>=6.0.2",
+    "selenium>=4.34.2",
+    "selenium-stealth>=1.0.6",
+    "selenium-wire>=5.1.0",
+    "setuptools>=80.9.0",
+    "undetected-chromedriver>=3.5.5",
+]
+
+[dependency-groups]
+dev = [
+    "bs4>=0.0.2",
+    "mitmproxy>=12.1.1",
+    "pynvim>=0.5.2",
+]
