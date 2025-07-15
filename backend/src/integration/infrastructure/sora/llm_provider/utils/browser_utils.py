@@ -1,5 +1,7 @@
 import os
-from ..config import CONFIG
+
+from src.integration.infrastructure.sora.llm_provider import CONFIG
+
 
 def get_profile_paths(browser):
     home = os.path.expanduser("~")

@@ -3,8 +3,6 @@ import re
 import time
 from urllib.parse import urljoin
 from typing import Dict, Any, List
-from .base import BaseLLMProvider
-from ..browsers.base import BaseBrowser
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,7 +10,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from markdownify import markdownify as md
 from bs4 import BeautifulSoup
-from ..utils.preprocessing import *
+
+from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
+from src.integration.infrastructure.sora.llm_provider.providers import BaseLLMProvider
+from src.integration.infrastructure.sora.llm_provider.utils.preprocessing import clean_html_claude
+
 
 class ClaudeProvider(BaseLLMProvider):
     def __init__(self, browser: BaseBrowser, config: Dict[str, Any]):

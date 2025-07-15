@@ -4,7 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from ..browsers.base import BaseBrowser
+
+from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
+
 
 class BaseLLMProvider(ABC):
     def __init__(self, browser: BaseBrowser, config: Dict[str, Any]):

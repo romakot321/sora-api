@@ -6,9 +6,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .base import BaseDirectorProvider
-from ..browsers.base import BaseBrowser
-from ..utils.preprocessing import preprocess_prompt
+
+from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
+from src.integration.infrastructure.sora.llm_provider.directors import BaseDirectorProvider
+from src.integration.infrastructure.sora.llm_provider.utils.preprocessing import preprocess_prompt
 
 
 class SoraDirector(BaseDirectorProvider):

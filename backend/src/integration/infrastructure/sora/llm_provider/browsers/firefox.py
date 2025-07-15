@@ -1,7 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from ..utils.browser_utils import get_profile_paths
-from ..config import CONFIG
+
+from src.integration.infrastructure.sora.llm_provider import CONFIG
+from src.integration.infrastructure.sora.llm_provider.utils.browser_utils import get_profile_paths
+
 
 class FirefoxBrowser:
     def __init__(self, config):
