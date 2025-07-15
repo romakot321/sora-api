@@ -22,7 +22,8 @@ class SoraRestAdapter:
     def on_tasks_fetch(self, data: dict):
         try:
             tasks_response = SoraTaskFetchResponse.model_validate(data)
-        except ValidationError:
+        except ValidationError as e:
+            print(e)
             pass
         else:
             if tasks_response.task_responses:
@@ -30,7 +31,8 @@ class SoraRestAdapter:
 
         try:
             created_response = SoraTaskCreatedResponse.model_validate(data)
-        except ValidationError:
+        except ValidationError as e:
+            print(e)
             pass
         else:
             return self.on_task_created(created_response.id)

@@ -8,12 +8,12 @@ from src.core.http.client import IHttpClient
 from src.integration.domain.exceptions import IntegrationRequestException
 from src.task.application.interfaces.task_runner import ITaskRunner
 from src.task.application.interfaces.task_uow import ITaskUnitOfWork
-from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO
+from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO, TaskImageCreateDTO
 from src.task.domain.entities import Task, TaskRun, TaskStatus, TaskUpdate
 from src.task.domain.mappers import IntegrationResponseToDomainMapper
 
 
-class RunTaskUseCase:
+class RunImageTaskUseCase:
     TIMEOUT_SECONDS = 5 * 60
 
     def __init__(
@@ -26,7 +26,7 @@ class RunTaskUseCase:
         self.runner = runner
         self.http_client = http_client
 
-    async def execute(self, task_id: UUID, dto: TaskCreateDTO, file: BytesIO | None) -> None:
+    async def execute(self, task_id: UUID, dto: TaskImageCreateDTO, file: BytesIO | None) -> None:
         """Run it in background"""
         dto.prompt = f"Generation seed: {task_id}\n" + dto.prompt
 
@@ -87,7 +87,7 @@ class RunTaskUseCase:
 
     async def _run(self, command: TaskRun) -> tuple[TaskResultDTO | None, None | str]:
         try:
-            result = await asyncio.wait_for(self.runner.start(command), timeout=self.TIMEOUT_SECONDS)
+            result = await asyncio.wait_for(self.runner.start_for_image(command), timeout=self.TIMEOUT_SECONDS)
         except asyncio.TimeoutError:
             return None, "Generation run error: Timeout"
         except IntegrationRequestException as e:

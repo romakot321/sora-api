@@ -1,5 +1,5 @@
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Literal
 from urllib.parse import urljoin
 
 from selenium.webdriver.common.by import By
@@ -18,6 +18,13 @@ class SoraDirector(BaseDirectorProvider):
         if "Verify you are human by completing the action below." in self.browser.driver.find_element(By.CSS_SELECTOR,
                                                                                                       "html").text:
             print("CAPTCHA required")
+
+    def upload_file(self, filepath: str):
+        self.browser.click_element(self.config["attach_media_button_xpath"])
+        self.browser.driver.execute_script('''document.querySelector("input[type='file']").style.display="block"''')
+        # self.browser.click_element(self.config["upload_from_device_button_xpath"])
+
+        self.browser.send_keys(self.config["file_input_xpath"], filepath, clear_first=True)
 
     def create_video(self, message: str) -> bool:
         try:
@@ -50,6 +57,35 @@ class SoraDirector(BaseDirectorProvider):
         except Exception as e:
             print(f"Error creating video: {e}")
             return False
+
+    def create_image(self, message: str, delay: int = 10, interval: int = 5) -> bool:
+        _ = self.browser.send_keys(self.config["input_image_xpath"], "", clear_first=True)
+
+        messages = preprocess_prompt(message)
+        for message in messages:
+            send_status = self.browser.send_keys(
+                self.config["input_image_xpath"], message, clear_first=False
+            )
+            self.browser.random_delay(interval, interval)
+            newline_status = self.browser.send_keys(
+                self.config["input_image_xpath"], (Keys.SHIFT + Keys.ENTER), clear_first=False
+            )
+            self.browser.random_delay(interval, interval)
+
+            if not (send_status and newline_status):
+                print("Failed to send message to input field")
+                return False
+
+        self.browser.random_delay(delay, delay)
+        # Click the general button
+        click_status = self.browser.click_element(self.config["remix_button_xpath"])
+        if not click_status:
+            click_status = self.browser.click_element(self.config["create_image_button_xpath"])
+            if not click_status:
+                print("Failed to click general button")
+                return False
+
+        return True
 
     def create_video_safely(
             self, message: str, delay: int = 10, interval: int = 5
@@ -134,6 +170,13 @@ class SoraDirector(BaseDirectorProvider):
         except Exception as e:
             print(f"Error selecting option: {e}")
             return False
+
+    def update_type(self, type: Literal["Image", "Video"]) -> bool:
+        if not self._click_general_button_by_text(["Image", "Video"]):
+            return False
+
+        # Select the desired option
+        return self._select_option_from_popup(type)
 
     def update_aspect_ratio(self, aspect_ratio: str) -> bool:
         """Update aspect ratio setting"""

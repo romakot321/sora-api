@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from src.integration.domain.dtos import IntegrationTaskRunParamsDTO
+from src.integration.domain.dtos import IntegrationTaskRunParamsDTO, IntegrationImageTaskRunParamsDTO
 
 
 class TaskStatus(str, Enum):
@@ -37,6 +37,12 @@ class TaskResultQuality(str, Enum):
 
 
 class TaskRun(IntegrationTaskRunParamsDTO, BaseModel):
+    file: BytesIO | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class TaskRunImage(IntegrationImageTaskRunParamsDTO, BaseModel):
     file: BytesIO | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

@@ -19,6 +19,11 @@ class IntegrationTaskRunParamsDTO(BaseModel):
     prompt: str
 
 
+class IntegrationImageTaskRunParamsDTO(BaseModel):
+    aspect_ratio: Literal["1:1", "2:3", "3:2"]
+    prompt: str
+
+
 class IntegrationTaskResultDTO(BaseModel):
     status: IntegrationTaskStatus
     external_task_id: str | None = None

@@ -12,7 +12,7 @@ class SoraTaskGeneration(BaseModel):
 
 class SoraTask(BaseModel):
     id: str
-    status: Literal["queued", "succeeded", "failure", "preprocessing"]
+    status: Literal["queued", "succeeded", "failure", "preprocessing", "running"]
     generations: list[SoraTaskGeneration]
     prompt: str | None = None
     failure_reason: str | None = None
@@ -31,4 +31,9 @@ class SoraGenerateDTO(BaseModel):
     duration: Literal["5", "10", "15", "20"]
     aspect_ratio: Literal["16:9", "1:1", "9:16", "2:3", "3:2"]
     resolution: Literal["480p", "720p", "1080p"]
+    prompt: str
+
+
+class SoraGenerateImageDTO(BaseModel):
+    aspect_ratio: Literal["1:1", "2:3", "3:2"]
     prompt: str

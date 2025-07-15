@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "123"
 
     PROJECT_NAME: str = os.environ.get("PROJECT_NAME", "UNNAMED PROJECT")
+    STORAGE_PATH: str = "storage"
 
     DB_TYPE: Literal['POSTGRESQL', 'ASYNC_POSTGRESQL', 'SQLITE', 'ASYNC_SQLITE'] = os.environ.get("DB_TYPE")
     DB_NAME: str = os.environ.get("DB_NAME")

@@ -19,13 +19,19 @@ sora:
   prefix: "https://sora.chatgpt.com/"
   video_base_url: "https://sora.chatgpt.com/g/"
   input_xpath: "//textarea[@placeholder='Describe your video...']"
+  input_image_xpath: "//textarea[@placeholder='Describe your image...' or @placeholder='Describe a new image...']"
   general_button_xpath: "//button[@type='button' and @role='combobox' and @aria-autocomplete='none' and @dir='ltr']"
+  remix_button_xpath: "//button[text()='Remix']"
+  image_aspect_ratios: [ "3:2", "1:1", "2:3" ]
   aspect_ratios: [ "16:9", "1:1", "9:16", "2:3", "3:2" ]
   resolutions: [ "480p", "720p", "1080p" ]
   durations: [ "5s", "10s", "15s", "20s" ]
   variations: [ "1v", "2v", "4v" ]
   create_button_xpath: "//button[.//span[text()='Create video']]"
+  create_image_button_xpath: "//button[.//span[text()='Create image']]"
   attach_media_button_xpath: "//button[.//span[text()='Attach media']]"
+  upload_from_device_button_xpath: "//div[text()='Upload from device']"
+  file_input_xpath: "//input[@type='file' and @accept='image/jpeg,image/png,image/webp']"
   latest_video_container_xpath: "//div[@data-index='1']"
   video_href_xpath: ".//a[contains(@href, '/g/')]"
   first_download_xpath: "//button[@aria-haspopup='menu' and .//span[normalize-space(text())='Download']]"

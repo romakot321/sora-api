@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import Form
 from pydantic import BaseModel, HttpUrl
 
-from src.integration.domain.dtos import IntegrationTaskRunParamsDTO
+from src.integration.domain.dtos import IntegrationTaskRunParamsDTO, IntegrationImageTaskRunParamsDTO
 from src.task.domain.entities import TaskStatus
 
 
@@ -34,6 +34,16 @@ def as_form(cls: Type[BaseModel]):
 
 @as_form
 class TaskCreateDTO(IntegrationTaskRunParamsDTO, BaseModel):
+    user_id: str
+    app_bundle: str
+    webhook_url: HttpUrl | None = None
+
+    @classmethod
+    def as_form(cls): ...
+
+
+@as_form
+class TaskImageCreateDTO(IntegrationImageTaskRunParamsDTO, BaseModel):
     user_id: str
     app_bundle: str
     webhook_url: HttpUrl | None = None
