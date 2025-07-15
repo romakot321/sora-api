@@ -31,12 +31,12 @@ class ApiResponse(BaseModel):
 
 class HttpApiClient(AuthMixin):
     def __init__(
-        self,
-        client: IHttpClient,
-        source_url: str,
-        headers: dict | None = None,
-        cookies: dict | None = None,
-        token: str | None = None,
+            self,
+            client: IHttpClient,
+            source_url: str,
+            headers: dict | None = None,
+            cookies: dict | None = None,
+            token: str | None = None,
     ):
         self.token = token
         self.client = client
@@ -51,14 +51,14 @@ class HttpApiClient(AuthMixin):
             raise IntegrationInvalidResponseException(e) from e
 
     async def request(
-        self,
-        method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"],
-        endpoint: str,
-        json: dict | None = None,
-        params: dict | None = None,
-        headers: dict | None = None,
-        cookies: dict | None = None,
-        **kwargs,
+            self,
+            method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"],
+            endpoint: str,
+            json: dict | None = None,
+            params: dict | None = None,
+            headers: dict | None = None,
+            cookies: dict | None = None,
+            **kwargs,
     ) -> ApiResponse:
         headers = headers or {}
         cookies = cookies or {}
@@ -80,7 +80,8 @@ class HttpApiClient(AuthMixin):
 
         try:
             response_data = ApiResponse(
-                data=await response.json(), cookies=dict(response.cookies.items()), headers=dict(response.headers.items())
+                data=await response.json(), cookies=dict(response.cookies.items()),
+                headers=dict(response.headers.items())
             )
         except aiohttp.client_exceptions.ContentTypeError as e:
             raise IntegrationInvalidResponseException("Empty response") from e

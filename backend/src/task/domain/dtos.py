@@ -1,12 +1,12 @@
 import inspect
-from uuid import UUID
 from typing import Type
+from uuid import UUID
 
 from fastapi import Form
 from pydantic import BaseModel, HttpUrl
 
-from src.task.domain.entities import TaskStatus
 from src.integration.domain.dtos import IntegrationTaskRunParamsDTO
+from src.task.domain.entities import TaskStatus
 
 
 def as_form(cls: Type[BaseModel]):

@@ -20,10 +20,10 @@ sora:
   video_base_url: "https://sora.chatgpt.com/g/"
   input_xpath: "//textarea[@placeholder='Describe your video...']"
   general_button_xpath: "//button[@type='button' and @role='combobox' and @aria-autocomplete='none' and @dir='ltr']"
-  aspect_ratios: ["16:9", "1:1", "9:16", "2:3", "3:2"]
-  resolutions: ["480p", "720p", "1080p"]
-  durations: ["5s", "10s", "15s", "20s"]
-  variations: ["1v", "2v", "4v"]
+  aspect_ratios: [ "16:9", "1:1", "9:16", "2:3", "3:2" ]
+  resolutions: [ "480p", "720p", "1080p" ]
+  durations: [ "5s", "10s", "15s", "20s" ]
+  variations: [ "1v", "2v", "4v" ]
   create_button_xpath: "//button[.//span[text()='Create video']]"
   attach_media_button_xpath: "//button[.//span[text()='Attach media']]"
   latest_video_container_xpath: "//div[@data-index='1']"
@@ -42,7 +42,7 @@ sora:
 chatgpt:
   url: "https://chatgpt.com/"
   chat_base_url: "https://chatgpt.com/c/"
-  support_models: [""]
+  support_models: [ "" ]
   input_xpath: "//div[@id='prompt-textarea']"
   file_xpath: "//input[@type='file']"
   send_button_xpath: "//button[@data-testid='send-button']"
@@ -74,7 +74,7 @@ claude:
   url: "https://claude.ai/"
   chat_base_url: "https://claude.ai/chat/"
   chat_list_url: "https://claude.ai/recents"
-  support_models: [""]
+  support_models: [ "" ]
   input_xpath: "//div[@aria-label='Write your prompt to Claude']//div[@contenteditable='true']"
   file_xpath: "//input[@type='file' and @data-testid='file-upload']"
   send_button_xpath: "//button[@aria-label='Send Message']"
@@ -94,7 +94,7 @@ claude:
   text_artifact_xpath: "/html/body/div[3]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div/div[contains(@class, 'font-claude-message')]"
   code_artifact_xpath: "/html/body/div[3]/div/div/div[2]/div[2]/div[2]/div/div/div/div[3]/div/div/code"
   models:
-    "sonnet": 
+    "sonnet":
       name: "Claude 3.5 Sonnet"
       description: "Most intelligent model"
     "sonnet_legacy":

@@ -5,7 +5,7 @@ from src.integration.infrastructure.sora.llm_provider import CONFIG
 
 def get_profile_paths(browser):
     home = os.path.expanduser("~")
-    
+
     user_data_dir = os.path.join(home, "LLMProvider")
     if not os.path.exists(user_data_dir):
         os.makedirs(user_data_dir)

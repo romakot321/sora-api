@@ -1,18 +1,20 @@
 import time
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Optional, List
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
+
 from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 
 class BaseBrowser(ABC):
     """Base class for browser interactions with enhanced error handling and typing."""
-    
+
     def __init__(self):
         self.driver = None
-    
+
     def wait_presence(self, xpath: str, timeout: int = 3) -> bool:
         """Wait for element presence with explicit typing and error handling."""
         try:
@@ -27,10 +29,10 @@ class BaseBrowser(ABC):
             return False
 
     def find_element(
-        self, 
-        xpath: str, 
-        timeout: int = 10,
-        wait_type: str = "presence"
+            self,
+            xpath: str,
+            timeout: int = 10,
+            wait_type: str = "presence"
     ) -> Optional[WebElement]:
         """Find element with multiple wait conditions and error handling."""
         try:
@@ -51,9 +53,9 @@ class BaseBrowser(ABC):
             return None
 
     def find_elements(
-        self, 
-        xpath: str, 
-        timeout: int = 10
+            self,
+            xpath: str,
+            timeout: int = 10
     ) -> List[WebElement]:
         """Find multiple elements with error handling."""
         try:
@@ -69,10 +71,10 @@ class BaseBrowser(ABC):
             return []
 
     def click_element(
-        self, 
-        xpath: str, 
-        timeout: int = 10,
-        retry_count: int = 2
+            self,
+            xpath: str,
+            timeout: int = 10,
+            retry_count: int = 2
     ) -> bool:
         """Click element with retry mechanism and error handling."""
         for attempt in range(retry_count):
@@ -89,10 +91,10 @@ class BaseBrowser(ABC):
         return False
 
     def send_keys(
-        self, 
-        xpath: str, 
-        keys: str,
-        clear_first: bool = True
+            self,
+            xpath: str,
+            keys: str,
+            clear_first: bool = True
     ) -> bool:
         """Send keys to element with optional clearing."""
         try:
@@ -108,17 +110,17 @@ class BaseBrowser(ABC):
             return False
 
     def is_element_present(
-        self, 
-        xpath: str, 
-        timeout: int = 10
+            self,
+            xpath: str,
+            timeout: int = 10
     ) -> bool:
         """Check element presence with explicit timeout."""
         return self.wait_presence(xpath, timeout)
 
     def get_element_text(
-        self, 
-        xpath: str, 
-        timeout: int = 10
+            self,
+            xpath: str,
+            timeout: int = 10
     ) -> Optional[str]:
         """Get element text with error handling."""
         element = self.find_element(xpath, timeout)
@@ -127,10 +129,10 @@ class BaseBrowser(ABC):
         return None
 
     def get_element_attribute(
-        self, 
-        xpath: str, 
-        attribute: str, 
-        timeout: int = 10
+            self,
+            xpath: str,
+            attribute: str,
+            timeout: int = 10
     ) -> Optional[str]:
         """Get element attribute with error handling."""
         element = self.find_element(xpath, timeout)

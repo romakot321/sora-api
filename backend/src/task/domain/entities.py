@@ -1,5 +1,5 @@
-from io import BytesIO
 from enum import Enum
+from io import BytesIO
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -37,7 +37,7 @@ class TaskResultQuality(str, Enum):
 
 
 class TaskRun(IntegrationTaskRunParamsDTO, BaseModel):
-    file: BytesIO
+    file: BytesIO | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -46,4 +46,3 @@ class TaskUpdate(BaseModel):
     status: TaskStatus | None = None
     result: str | None = None
     error: str | None = None
-

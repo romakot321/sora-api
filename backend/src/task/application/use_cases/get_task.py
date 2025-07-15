@@ -3,8 +3,8 @@ from uuid import UUID
 from fastapi import HTTPException
 
 from src.db.exceptions import DBModelNotFoundException
-from src.task.domain.dtos import TaskReadDTO
 from src.task.application.interfaces.task_uow import ITaskUnitOfWork
+from src.task.domain.dtos import TaskReadDTO
 
 
 class GetTaskUseCase:

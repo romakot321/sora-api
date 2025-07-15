@@ -1,9 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from typing import Dict, Any
 
 from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
 
@@ -16,7 +12,7 @@ class BaseLLMProvider(ABC):
     @abstractmethod
     def send_message(self, message: str) -> None:
         pass
-    
+
     @abstractmethod
     def stop_generating(self) -> None:
         pass
@@ -40,7 +36,7 @@ class BaseLLMProvider(ABC):
     @abstractmethod
     def get_current_model(self) -> str:
         pass
-    
+
     @abstractmethod
     def select_model(self, model_name: str) -> None:
         pass

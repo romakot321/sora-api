@@ -1,15 +1,12 @@
-import os
 import re
 import time
+from typing import Dict, Any
 from urllib.parse import urljoin
-from typing import Dict, Any, List
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from markdownify import markdownify as md
+
 from bs4 import BeautifulSoup
+from markdownify import markdownify as md
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 
 from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
 from src.integration.infrastructure.sora.llm_provider.providers import BaseLLMProvider
@@ -26,7 +23,7 @@ class ClaudeProvider(BaseLLMProvider):
         click_status = self.browser.click_element(self.config['send_button_xpath'])
         return send_status and click_status
 
-    def stop_generating(self, interval:int = 0.5, attempts: int = 2) -> bool:
+    def stop_generating(self, interval: int = 0.5, attempts: int = 2) -> bool:
         for _ in range(attempts):
             try:
                 self.browser.click_element(self.config['stop_button_xpath'])
@@ -41,7 +38,7 @@ class ClaudeProvider(BaseLLMProvider):
                 'html': None,
                 'text': None,
                 'markdown': None
-            }, 
+            },
             'artifact': [
 
             ]
@@ -50,7 +47,7 @@ class ClaudeProvider(BaseLLMProvider):
         responses = self.browser.find_elements(self.config['response_xpath'])
         if not responses:
             return response_dict
-        
+
         # Get the latest response element
         latest_response = responses[-1]
         html_content = latest_response.get_attribute('outerHTML')
@@ -65,7 +62,7 @@ class ClaudeProvider(BaseLLMProvider):
         response_dict['chat']['html'] = html_content
         response_dict['chat']['text'] = soup.text
         response_dict['chat']['markdown'] = md(clean_html_claude(response_dict['chat']['html']))
-        
+
         if not self.config['artifact_button_xpath'].startswith('.'):
             self.config['artifact_button_xpath'] = f".{self.config['artifact_button_xpath']}"
 
@@ -73,7 +70,7 @@ class ClaudeProvider(BaseLLMProvider):
             artifact_buttons = latest_response.find_elements(By.XPATH, self.config['artifact_button_xpath'])
         except:
             artifact_buttons = None
-        
+
         if artifact_buttons:
             for artifact_index in range(len(artifact_buttons)):
                 artifact_buttons = latest_response.find_elements(By.XPATH, self.config['artifact_button_xpath'])
@@ -90,7 +87,7 @@ class ClaudeProvider(BaseLLMProvider):
                 except Exception as e:
                     print(f'Error clicking textdoc button: {e}')
                     continue
-                
+
                 artifact_response = {
                     'html': None,
                     'text': None,
@@ -122,7 +119,7 @@ class ClaudeProvider(BaseLLMProvider):
                     # artifact_response['markdown'] = md(artifact_response['html'])
                     # response_dict['artifact'].append(artifact_response)
                     continue
-        
+
         return response_dict
 
     def get_responses(self) -> str:
@@ -137,7 +134,7 @@ class ClaudeProvider(BaseLLMProvider):
         self.browser.wait_presence(self.config['chat_list_xpath'])
 
         last_height = self.browser.driver.execute_script('return document.body.scrollHeight')
-        
+
         while True:
             self.browser.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
             time.sleep(0.5)
@@ -145,7 +142,7 @@ class ClaudeProvider(BaseLLMProvider):
             if new_height == last_height:
                 break
             last_height = new_height
-        
+
         li_elements = self.browser.find_elements(self.config['chat_list_xpath'])
         for li in li_elements:
             a_element = li.find_element(By.TAG_NAME, 'a')
@@ -160,11 +157,11 @@ class ClaudeProvider(BaseLLMProvider):
             if match:
                 chat_id = match.group(1)
                 chats.append({
-                    'title' : title, 
-                    'url' : url, 
-                    'chat_id' : chat_id
+                    'title': title,
+                    'url': url,
+                    'chat_id': chat_id
                 })
-        
+
         self.browser.driver.get(original_url)
         self.browser.random_delay(10, 30)
 
@@ -185,7 +182,7 @@ class ClaudeProvider(BaseLLMProvider):
             if not model_selector:
                 print('Model selector not found')
                 return False
-            
+
             # Check if menu is opened via aria-expanded attribute
             is_expanded = model_selector.get_attribute('aria-expanded') == 'true'
             if is_expanded:
@@ -193,9 +190,9 @@ class ClaudeProvider(BaseLLMProvider):
                     print('Failed to close model selector')
                     return False
                 return True
-            
+
             return True  # Already closed, no action needed
-            
+
         except Exception as e:
             print(f'Error hiding models menu: {e}')
             return False
@@ -206,27 +203,27 @@ class ClaudeProvider(BaseLLMProvider):
             if not model_selector:
                 print('Model selector not found')
                 return False
-            
+
             is_expanded = model_selector.get_attribute('aria-expanded') == 'true'
             if not is_expanded:
                 if not self.browser.click_element(self.config['model_button_xpath']):
                     print('Failed to click model selector')
                     return False
-            
+
             self.browser.random_delay(2, 5)
 
             more_models = self.browser.find_element(self.config['more_models_xpath'])
             if not more_models:
                 print('More models element not found')
                 return False
-            
+
             actions = ActionChains(self.browser.driver)
             actions.move_to_element(more_models).perform()
 
             self.browser.random_delay(2, 5)
-                
+
             return True
-            
+
         except Exception as e:
             print(f'Error opening models menu: {e}')
             return False
@@ -235,27 +232,27 @@ class ClaudeProvider(BaseLLMProvider):
         model_element = self.browser.find_element(self.config['model_button_xpath'])
         if not model_element:
             return ''
-            
+
         current_text = model_element.get_attribute('innerText')
         current_text = current_text.replace('Claude ', '').strip()
-        
+
         for key, model_info in self.config['models'].items():
             model_name = model_info['name'].replace('Claude ', '').strip()
             if current_text == model_name:
                 return key
-                
+
         return ''
 
     def select_model(self, model_name: str) -> bool:
         if not self.open_models_menu():
             print('Failed to open models menu')
             return False
-            
+
         model_info = self.config['models'].get(model_name)
         if not model_info:
             print(f'Model {model_name} not found in configuration')
             return False
-            
+
         # XPath that matches both the model name and description
         model_xpath = self.config['model_description_xpath'].format(
             name=model_info['name'],
@@ -266,7 +263,7 @@ class ClaudeProvider(BaseLLMProvider):
         if not model_element:
             print(f'Model element not found for {model_name}')
             return False
-            
+
         model_element.click()
         self.browser.random_delay(5, 7)
 
@@ -276,7 +273,7 @@ class ClaudeProvider(BaseLLMProvider):
         self.browser.random_delay(3, 5)
 
         return model_name == current_model
-    
+
     def wait_for_response_completion(self, timeout: int = 300) -> bool:
         status = self.check_llm_response_status()
         if status:
@@ -292,12 +289,12 @@ class ClaudeProvider(BaseLLMProvider):
                 time.sleep(0.3)
             return False
         return False
-    
+
     def check_send_button_status(self, timeout=10):
         button_element = self.browser.find_element(self.config['send_button_xpath'], timeout)
         is_disabled = button_element.get_attribute('disabled')
         return not is_disabled
-    
+
     def check_file_button_status(self, timeout: int = 10) -> bool:
         return self.browser.is_element_present(self.config['file_button_xpath'], timeout=timeout)
 
@@ -310,15 +307,15 @@ class ClaudeProvider(BaseLLMProvider):
                 if responses:
                     # Get the last (most recent) response
                     latest_response = responses[-1]
-                    
+
                     # Check streaming status in parent div
                     parent_div = latest_response.find_element(By.XPATH, './/ancestor::div[@data-is-streaming]')
                     is_streaming = parent_div.get_attribute('data-is-streaming')
-                    
+
                     # Use the response content and streaming status as the identifier
                     response_text = latest_response.get_attribute('innerText')
                     current_id = f'{response_text}_{is_streaming}'
-                    
+
                     # Compare with stored latest response ID
                     if not hasattr(self, 'latest_response_id') or current_id != self.latest_response_id:
                         self.latest_response_id = current_id

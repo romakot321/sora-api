@@ -1,6 +1,5 @@
-import loguru
-from loguru import logger
 from fastapi import FastAPI, Request, Response
+from loguru import logger
 from starlette.background import BackgroundTask
 
 from src.core.config import settings
@@ -33,7 +32,7 @@ def setup_fastapi_logging(app: FastAPI):
     fastapi_logger = logger.bind(name="fastapi")
     fastapi_logger = fastapi_logger.patch(add_app_name)
     fastapi_logger.add(
-        "/app/logs/fastapi.json",
+        "logs/fastapi.json",
         format="{time:MMMM D, YYYY > HH:mm:ss!UTC} | {level} | {message}",
         serialize=True,
         rotation="30 MB",
@@ -57,11 +56,10 @@ def setup_fastapi_logging(app: FastAPI):
     @app.exception_handler(Exception)
     async def log_exceptions(request: Request, exc: Exception):
         fastapi_logger.exception(exc)
-        return await app.default_exception_handler(request, exc)
 
 
 logger.add(
-    "/app/logs/app.json",
+    "logs/app.json",
     format="{time:MMMM D, YYYY > HH:mm:ss!UTC} | {level} | {message}",
     serialize=True,
     rotation="30 MB",

@@ -1,11 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from typing import Dict, Any
 
-from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
+from src.integration.infrastructure.sora.llm_provider.browsers.base import BaseBrowser
 
 
 class BaseDirectorProvider(ABC):
@@ -16,7 +12,7 @@ class BaseDirectorProvider(ABC):
     @abstractmethod
     def create_video(self, message: str) -> bool:
         pass
-    
+
     @abstractmethod
     def update_aspect_ratio(self, aspect_ratio: str) -> bool:
         pass

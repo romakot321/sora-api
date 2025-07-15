@@ -5,29 +5,31 @@ from uuid import UUID
 from loguru import logger
 
 from src.core.http.client import IHttpClient
-from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO
-from src.task.domain.mappers import IntegrationResponseToDomainMapper
-from src.task.domain.entities import Task, TaskRun, TaskStatus, TaskUpdate
 from src.integration.domain.exceptions import IntegrationRequestException
-from src.task.application.interfaces.task_uow import ITaskUnitOfWork
 from src.task.application.interfaces.task_runner import ITaskRunner
+from src.task.application.interfaces.task_uow import ITaskUnitOfWork
+from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO
+from src.task.domain.entities import Task, TaskRun, TaskStatus, TaskUpdate
+from src.task.domain.mappers import IntegrationResponseToDomainMapper
 
 
 class RunTaskUseCase:
     TIMEOUT_SECONDS = 5 * 60
 
     def __init__(
-        self,
-        uow: ITaskUnitOfWork,
-        runner: ITaskRunner,
-        http_client: IHttpClient,
+            self,
+            uow: ITaskUnitOfWork,
+            runner: ITaskRunner,
+            http_client: IHttpClient,
     ) -> None:
         self.uow = uow
         self.runner = runner
         self.http_client = http_client
 
-    async def execute(self, task_id: UUID, dto: TaskCreateDTO, file: BytesIO) -> None:
+    async def execute(self, task_id: UUID, dto: TaskCreateDTO, file: BytesIO | None) -> None:
         """Run it in background"""
+        dto.prompt = f"Generation seed: {task_id}" + dto.prompt
+
         command = TaskRun(**dto.model_dump(), file=file)
         logger.info(f"Running task {task_id}")
         logger.debug(f"Task {task_id} params: {command}")

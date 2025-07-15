@@ -1,7 +1,6 @@
+from src.integration.domain.dtos import IntegrationTaskResultDTO, IntegrationTaskStatus
 from src.task.domain.dtos import TaskResultDTO
 from src.task.domain.entities import TaskStatus
-from src.integration.domain.dtos import IntegrationTaskResultDTO, IntegrationTaskStatus
-from src.task.application.interfaces.task_runner import TResponseData
 
 
 class IntegrationResponseToDomainMapper:
@@ -14,13 +13,12 @@ class IntegrationResponseToDomainMapper:
         )
 
     def _map_status(self, status: IntegrationTaskStatus) -> TaskStatus:
-        if status == IntegrationTaskStatus.queued:
+        if status == IntegrationTaskStatus.queued or status == IntegrationTaskStatus.preprocessing:
             return TaskStatus.queued
         elif status == IntegrationTaskStatus.started:
             return TaskStatus.started
-        elif status == IntegrationTaskStatus.failed:
+        elif status == IntegrationTaskStatus.failure:
             return TaskStatus.failed
-        elif status == IntegrationTaskStatus.finished:
+        elif status == IntegrationTaskStatus.succeeded:
             return TaskStatus.finished
         raise ValueError(f"Failed to map integration response: Unknown status {status}")
-

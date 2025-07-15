@@ -1,5 +1,5 @@
-from src.task.domain.entities import TaskRun
 from src.integration.domain.schemas import SoraRunRequest
+from src.task.domain.entities import TaskRun
 
 
 class TaskRunToRequestMapper:

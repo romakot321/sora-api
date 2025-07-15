@@ -1,14 +1,13 @@
 import os
 import re
 import time
-from urllib.parse import urljoin
 from typing import Dict, Any, List, Optional
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from markdownify import markdownify as md
+from urllib.parse import urljoin
+
 from bs4 import BeautifulSoup
+from markdownify import markdownify as md
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
 from src.integration.infrastructure.sora.llm_provider.providers import BaseLLMProvider
@@ -28,23 +27,23 @@ class ChatGPTProvider(BaseLLMProvider):
         click_status = self.browser.click_element(self.config['send_button_xpath'], timeout=30)
         return send_status and click_status
 
-    def send_message_safely(self, message: str, delay: int = 10, interval: int=5) -> bool:
+    def send_message_safely(self, message: str, delay: int = 10, interval: int = 5) -> bool:
         _ = self.browser.send_keys(self.config['input_xpath'], '', clear_first=True)
 
         messages = preprocess_prompt(message)
         for message in messages:
             send_status = self.browser.send_keys(self.config['input_xpath'], message, clear_first=False)
             self.browser.random_delay(interval, interval)
-            newline_status = self.browser.send_keys(self.config['input_xpath'], (Keys.SHIFT + Keys.ENTER), clear_first=False)
+            newline_status = self.browser.send_keys(self.config['input_xpath'], (Keys.SHIFT + Keys.ENTER),
+                                                    clear_first=False)
             self.browser.random_delay(interval, interval)
 
             if not (send_status and newline_status):
                 return False
-        
+
         self.browser.random_delay(delay, delay)
         click_status = self.browser.click_element(self.config['send_button_xpath'], timeout=30)
         return click_status
-
 
     def stop_generating(self, interval: int = 0.5, attempts: int = 2) -> bool:
         for _ in range(attempts):
@@ -59,28 +58,28 @@ class ChatGPTProvider(BaseLLMProvider):
                 'html': None,
                 'text': None,
                 'markdown': None
-            }, 
+            },
             'canvas': {
                 'html': None,
                 'text': None,
                 'markdown': None
             }
         }
-        
+
         # Find all response elements
         responses = self.browser.find_elements(self.config['response_xpath'])
         if not responses:
             return response_dict
-            
+
         # Get the latest response element
         latest_response = responses[-1]
         response_dict['chat']['html'] = latest_response.get_attribute('outerHTML')
         response_dict['chat']['text'] = latest_response.get_attribute('innerText')
         response_dict['chat']['markdown'] = md(clean_html_gpt(response_dict['chat']['html']))
-        
+
         # Get the parent element to check for canvas indicators
         parent_element = latest_response.find_element(By.XPATH, '..')
-        
+
         # Check for canvas by looking for sibling button element
         try:
             sibling_button = parent_element.find_element(By.XPATH, './button')
@@ -98,9 +97,10 @@ class ChatGPTProvider(BaseLLMProvider):
             except Exception as e:
                 print(f'Error clicking textdoc button: {e}')
                 return response_dict
-            
+
             # Find the editor container by ID
-            header_title = self.browser.find_element(self.config['canvas_title_xpath']).get_attribute('innerText').strip()
+            header_title = self.browser.find_element(self.config['canvas_title_xpath']).get_attribute(
+                'innerText').strip()
 
             code_canvas_container = self.browser.find_element(self.config['code_canvas_xpath'])
             text_canvas_container = self.browser.find_element(self.config['text_canvas_xpath'])
@@ -124,13 +124,13 @@ class ChatGPTProvider(BaseLLMProvider):
                 response_dict['canvas']['html'] = html_content
                 response_dict['canvas']['text'] = soup.text
                 response_dict['canvas']['markdown'] = md(clean_html_gpt(html_content))
-        
+
         return response_dict
 
     def get_responses(self) -> List[str]:
         responses = self.browser.find_elements(self.config['response_xpath'])
         return [response.get_attribute('innerText') for response in responses]
-    
+
     def list_chats(self) -> List[Dict[str, Any]]:
         chats = []
         sidebar = self.browser.find_element(self.config['sidebar_xpath'])
@@ -148,7 +148,7 @@ class ChatGPTProvider(BaseLLMProvider):
             scroll_height = self.browser.driver.execute_script('return arguments[0].scrollHeight;', sidebar)
             client_height = self.browser.driver.execute_script('return arguments[0].clientHeight;', sidebar)
             scroll_position = self.browser.driver.execute_script('return arguments[0].scrollTop;', sidebar)
-            
+
             if abs((scroll_height - client_height) - scroll_position) <= 5:
                 break
 
@@ -159,7 +159,7 @@ class ChatGPTProvider(BaseLLMProvider):
                 a_element = li.find_element(By.TAG_NAME, 'a')
                 url = a_element.get_attribute('href') if a_element else None
                 title = li.get_attribute('innerText')
-                
+
                 pattern = rf'{self.config["chat_base_url"]}([^/]+)$'
                 match = re.search(pattern, url)
 
@@ -173,7 +173,7 @@ class ChatGPTProvider(BaseLLMProvider):
             except Exception as e:
                 print(f'Error processing chat element: {e}')
                 continue
-        
+
         return chats
 
     def select_chat(self, chat_id: str) -> bool:
@@ -191,7 +191,7 @@ class ChatGPTProvider(BaseLLMProvider):
             if not model_selector:
                 print('Model selector not found')
                 return False
-            
+
             # Check if menu is opened via aria-expanded attribute
             is_expanded = model_selector.get_attribute('aria-expanded') == 'true'
             if is_expanded:
@@ -199,9 +199,9 @@ class ChatGPTProvider(BaseLLMProvider):
                     print('Failed to close model selector')
                     return False
                 return True
-            
+
             return True  # Already closed, no action needed
-            
+
         except Exception as e:
             print(f'Error hiding models menu: {e}')
             return False
@@ -213,7 +213,7 @@ class ChatGPTProvider(BaseLLMProvider):
             if not model_selector:
                 print('Model selector not found')
                 return False
-            
+
             self.browser.random_delay(2.5, 5.5)
 
             # Check if menu is already opened
@@ -222,24 +222,24 @@ class ChatGPTProvider(BaseLLMProvider):
                 if not self.browser.click_element(self.config['model_xpath']):
                     print('Failed to click model selector')
                     return False
-            
+
             # Click more models
             more_models = self.browser.find_element(self.config['more_models_xpath'])
             if not more_models:
                 print('More models element not found')
                 return False
-            
+
             # Add random delay
             self.browser.random_delay(2.5, 5.5)
-            
+
             if not self.browser.click_element(self.config['more_models_xpath']):
                 print("Failed to click more models")
                 return False
 
             self.browser.random_delay(2.5, 5.5)
-                
+
             return True
-            
+
         except Exception as e:
             print(f'Error opening models menu: {e}')
             return False
@@ -264,7 +264,7 @@ class ChatGPTProvider(BaseLLMProvider):
                     continue
 
             return None
-            
+
         except Exception as e:
             print(f'Error getting current model: {e}')
             return None
@@ -276,21 +276,21 @@ class ChatGPTProvider(BaseLLMProvider):
         if model_name not in self.config['models']:
             print(f'Model {model_name} not found in supported models')
             return False
-        
+
         if not self.open_models_menu():
             return False
-        
+
         model_xpath = self.config['models'][model_name]
-        
+
         if not self.browser.click_element(model_xpath):
             print(f'Failed to select model {model_name}')
             return False
-        
+
         self.hide_models_menu()
         self.browser.random_delay(5, 5)
 
         return True
-    
+
     def wait_for_response_completion(self, timeout: int = 300, interval: int = 3) -> bool:
         status = self.check_llm_response_status()
         if status:
@@ -305,7 +305,7 @@ class ChatGPTProvider(BaseLLMProvider):
                         return True
                 self.browser.random_time_delay(interval)
         return False
-    
+
     def check_send_button_status(self, timeout=10):
         button_element = self.browser.find_element(self.config['send_button_xpath'], timeout)
         is_disabled = button_element.get_attribute('disabled')
@@ -325,24 +325,24 @@ class ChatGPTProvider(BaseLLMProvider):
                     return True
             time.sleep(1)
         return False
-    
+
     def upload_file(self, path: str) -> bool:
         try:
             path = os.path.abspath(os.path.expanduser(path))
             input_element = self.browser.find_element(self.config['input_xpath'])
             if not input_element:
                 return False
-                
+
             file_input = input_element.find_element(By.XPATH, self.config['file_xpath'])
             if not file_input:
                 return False
-                
+
             file_input.send_keys(path)
             return True
         except Exception as e:
             print(f'Error uploading file: {e}')
             return False
-    
+
     def wait_for_upload_completion(self, timeout: int = 600) -> bool:
         start_time = time.time()
         while time.time() - start_time < timeout:

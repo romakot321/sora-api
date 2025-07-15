@@ -1,18 +1,18 @@
-import time
-import json
 import random
+import time
+from typing import Optional
+
+import undetected_chromedriver as uc
+from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from typing import Optional
-from fake_useragent import UserAgent
+from selenium.webdriver.support.ui import WebDriverWait
 
 from src.integration.infrastructure.sora.adapter import SoraRestAdapter
 from src.integration.infrastructure.sora.llm_provider import CONFIG
-from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
+from src.integration.infrastructure.sora.llm_provider.browsers.base import BaseBrowser
 from src.integration.infrastructure.sora.llm_provider.utils.browser_utils import get_profile_paths
 
 
@@ -83,7 +83,8 @@ class ChromeBrowser(BaseBrowser):
 
     def _cdp_callback(self, message):
         try:
-            response_body = self.driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': message["params"]["requestId"]})
+            response_body = self.driver.execute_cdp_cmd('Network.getResponseBody',
+                                                        {'requestId': message["params"]["requestId"]})
         except Exception:
             response_body = None
 

@@ -1,14 +1,12 @@
 import time
+from typing import Dict, Any
 from urllib.parse import urljoin
-from typing import Dict, Any, List
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
-from src.integration.infrastructure.sora.llm_provider.browsers import BaseBrowser
-from src.integration.infrastructure.sora.llm_provider.directors import BaseDirectorProvider
+from src.integration.infrastructure.sora.llm_provider.browsers.base import BaseBrowser
+from src.integration.infrastructure.sora.llm_provider.directors.base import BaseDirectorProvider
 from src.integration.infrastructure.sora.llm_provider.utils.preprocessing import preprocess_prompt
 
 
@@ -17,7 +15,8 @@ class SoraDirector(BaseDirectorProvider):
         super().__init__(browser, config)
         self.browser.driver.get(self.config["url"])
         self.browser.random_time_delay(15, 30)
-        if "Verify you are human by completing the action below." in self.browser.driver.find_element(By.CSS_SELECTOR, "html").text:
+        if "Verify you are human by completing the action below." in self.browser.driver.find_element(By.CSS_SELECTOR,
+                                                                                                      "html").text:
             print("CAPTCHA required")
 
     def create_video(self, message: str) -> bool:
@@ -53,7 +52,7 @@ class SoraDirector(BaseDirectorProvider):
             return False
 
     def create_video_safely(
-        self, message: str, delay: int = 10, interval: int = 5
+            self, message: str, delay: int = 10, interval: int = 5
     ) -> bool:
         # Send the prompt message to the input field
         _ = self.browser.send_keys(self.config["input_xpath"], "", clear_first=True)

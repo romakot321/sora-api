@@ -5,9 +5,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.exceptions import DBModelConflictException, DBModelNotFoundException
+from src.task.application.interfaces.task_repository import ITaskRepository
 from src.task.domain.entities import Task, TaskCreate, TaskStatus, TaskUpdate
 from src.task.infrastructure.db.orm import TaskDB
-from src.task.application.interfaces.task_repository import ITaskRepository
 
 
 class PGTaskRepository(ITaskRepository):

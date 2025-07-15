@@ -1,8 +1,8 @@
 from loguru import logger
 
+from src.task.application.interfaces.task_uow import ITaskUnitOfWork
 from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO
 from src.task.domain.entities import TaskCreate
-from src.task.application.interfaces.task_uow import ITaskUnitOfWork
 
 
 class CreateTaskUseCase:

@@ -1,18 +1,10 @@
-import json
-from io import BytesIO
-
-from src.core.config import settings
-from src.core.http.client import IHttpClient
-from src.integration import SoraTaskRepository, SoraDirector
+from src.integration.domain.dtos import IntegrationTaskResultDTO, IntegrationTaskStatus
 from src.integration.domain.entities import SoraGenerateDTO
 from src.integration.infrastructure.sora.api import run_sora_generate, wait_for_sora_task_created
-from src.task.domain.entities import TaskRun
-from src.integration.domain.dtos import IntegrationTaskResultDTO, IntegrationTaskStatus
-from src.integration.domain.mappers import TaskRunToRequestMapper
-from src.integration.domain.schemas import SoraRunResponse, SoraRunRequest
-from src.integration.domain.exceptions import IntegrationRequestException
+from src.integration.infrastructure.sora.llm_provider.directors.sora import SoraDirector
+from src.integration.infrastructure.sora.task_repository import SoraTaskRepository
 from src.task.application.interfaces.task_runner import ITaskRunner
-from src.integration.infrastructure.http_api_client import HttpApiClient
+from src.task.domain.entities import TaskRun
 
 
 class SoraTaskRunner(ITaskRunner[IntegrationTaskResultDTO]):
@@ -29,5 +21,7 @@ class SoraTaskRunner(ITaskRunner[IntegrationTaskResultDTO]):
     async def get_result(self, external_task_id: str) -> IntegrationTaskResultDTO | None:
         task = self.task_repository.get_by_id(external_task_id)
         if task.status == 'succeeded' or task.status == 'failed':
-            return IntegrationTaskResultDTO(status=IntegrationTaskStatus(task.status), external_task_id=task.id, result=task.generations[0].url if task.generations else None, error=task.failure_reason)
+            return IntegrationTaskResultDTO(status=IntegrationTaskStatus(task.status), external_task_id=task.id,
+                                            result=task.generations[0].url if task.generations else None,
+                                            error=task.failure_reason)
         return None

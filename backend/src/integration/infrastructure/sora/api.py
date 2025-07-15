@@ -1,9 +1,8 @@
 import time
-from fastapi import APIRouter
 
-from llm_provider.directors import SoraDirector
-from src.integration import SoraTaskRepository
 from src.integration.domain.entities import SoraGenerateDTO, SoraTask
+from src.integration.infrastructure.sora.llm_provider.directors.sora import SoraDirector
+from src.integration.infrastructure.sora.task_repository import SoraTaskRepository
 
 
 def run_sora_generate(director: SoraDirector, dto: SoraGenerateDTO):

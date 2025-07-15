@@ -20,6 +20,7 @@ dependencies = [
     "pyyaml>=6.0.2",
     "requests>=2.32.3",
     "selenium>=4.34.2",
+    "setuptools>=80.9.0",
     "sqladmin>=0.20.1",
     "sqlalchemy>=2.0.41",
     "undetected-chromedriver>=3.5.5",
