@@ -12,6 +12,8 @@ from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO, Task
 from src.task.domain.entities import Task, TaskRun, TaskStatus, TaskUpdate
 from src.task.domain.mappers import IntegrationResponseToDomainMapper
 
+queue_lock = asyncio.Lock()
+
 
 class RunImageTaskUseCase:
     TIMEOUT_SECONDS = 5 * 60
@@ -33,14 +35,10 @@ class RunImageTaskUseCase:
         command = TaskRun(**dto.model_dump(), file=file)
         logger.info(f"Running task {task_id}")
         logger.debug(f"Task {task_id} params: {command}")
-        task, error = await self._run(command)
 
-        if error is not None or task is None:
-            task = await self._store_error(task_id, status=TaskStatus.failed, error=error)
-            await self._send_webhook(task_id, TaskResultDTO(**task.model_dump()), dto.webhook_url)
-            return
+        async with queue_lock:
+            result, error = await self._run(command)
 
-        result, error = await self._wait_for_result(task.external_task_id)
         if error is not None:
             task = await self._store_error(task_id, status=TaskStatus.failed, error=error)
             await self._send_webhook(task_id, TaskResultDTO(**task.model_dump()), dto.webhook_url)
@@ -98,4 +96,4 @@ class RunImageTaskUseCase:
             return None, "Internal exception"
 
         result_domain = IntegrationResponseToDomainMapper().map_one(result)
-        return result_domain, None
+        return await self._wait_for_result(result_domain.external_task_id)
