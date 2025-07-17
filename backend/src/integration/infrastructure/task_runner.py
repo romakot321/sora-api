@@ -15,14 +15,16 @@ class SoraTaskRunner(ITaskRunner[IntegrationTaskResultDTO]):
 
     async def start(self, data: TaskRun) -> IntegrationTaskResultDTO:
         dto = SoraGenerateDTO(**data.model_dump())
-        run_sora_generate_video(self.sora_director, dto, data.file)
-        task = wait_for_sora_task_created(self.task_repository, dto)
+        with self.sora_director.browser.use_lock:
+            run_sora_generate_video(self.sora_director, dto, data.file)
+            task = wait_for_sora_task_created(self.task_repository, dto)
         return IntegrationTaskResultDTO(status=IntegrationTaskStatus.queued, external_task_id=task.id)
 
     async def start_for_image(self, data: TaskRun) -> IntegrationTaskResultDTO:
         dto = SoraGenerateImageDTO(**data.model_dump())
-        run_sora_generate_image(self.sora_director, dto, data.file)
-        task = wait_for_sora_task_created(self.task_repository, dto)
+        with self.sora_director.browser.use_lock:
+            run_sora_generate_image(self.sora_director, dto, data.file)
+            task = wait_for_sora_task_created(self.task_repository, dto)
         return IntegrationTaskResultDTO(status=IntegrationTaskStatus.queued, external_task_id=task.id)
 
     async def get_result(self, external_task_id: str) -> IntegrationTaskResultDTO | None:

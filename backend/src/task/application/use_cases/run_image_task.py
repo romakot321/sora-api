@@ -1,4 +1,5 @@
 import asyncio
+import random
 from io import BytesIO
 from uuid import UUID
 
@@ -12,7 +13,8 @@ from src.task.domain.dtos import TaskReadDTO, TaskCreateDTO, TaskResultDTO, Task
 from src.task.domain.entities import Task, TaskRun, TaskStatus, TaskUpdate
 from src.task.domain.mappers import IntegrationResponseToDomainMapper
 
-queue_lock = asyncio.Lock()
+
+queue_locks = [asyncio.Lock() for _ in range(3)]
 
 
 class RunImageTaskUseCase:
@@ -28,6 +30,11 @@ class RunImageTaskUseCase:
         self.runner = runner
         self.http_client = http_client
 
+    @staticmethod
+    def _get_queue_lock():
+        lock = [l for l in queue_locks if not l.locked()]
+        return lock[0] if lock else random.choice(queue_locks)
+
     async def execute(self, task_id: UUID, dto: TaskImageCreateDTO, file: BytesIO | None) -> None:
         """Run it in background"""
         dto.prompt = f"Generation seed: {task_id}\n" + dto.prompt
@@ -36,7 +43,7 @@ class RunImageTaskUseCase:
         logger.info(f"Running task {task_id}")
         logger.debug(f"Task {task_id} params: {command}")
 
-        async with queue_lock:
+        async with self._get_queue_lock():
             result, error = await self._run(command)
 
         if error is not None:

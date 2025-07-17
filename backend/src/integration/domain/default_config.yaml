@@ -4,6 +4,18 @@ chrome:
   user_data_dir: ""  # If empty, will use default
   profile_directory: ""  # Default value, can be customized
 
+chrome2:
+  use_undetected: true
+  load_profile: true
+  user_data_dir: ""  # If empty, will use default
+  profile_directory: "Second"  # Default value, can be customized
+
+chrome3:
+  use_undetected: true
+  load_profile: true
+  user_data_dir: ""  # If empty, will use default
+  profile_directory: "Third"  # Default value, can be customized
+
 firefox:
   load_profile: true
   user_data_dir: ""  # If empty, will use default

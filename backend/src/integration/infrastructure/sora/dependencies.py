@@ -1,3 +1,5 @@
+import random
+
 from src.integration.infrastructure.sora.adapter import SoraRestAdapter
 from src.integration.infrastructure.sora.llm_provider import get_provider_config
 from src.integration.infrastructure.sora.llm_provider.browsers.chrome import ChromeBrowser
@@ -14,8 +16,9 @@ def get_sora_rest_adapter():
 
 
 def get_sora_director():
-    global _browser
-    return SoraDirector(_browser, get_provider_config("sora"))
+    global browsers
+    browser = random.choice(browsers)
+    return SoraDirector(browser, get_provider_config("sora"))
 
 
-_browser = ChromeBrowser(get_sora_rest_adapter())
+browsers = [ChromeBrowser(get_sora_rest_adapter(), browser_name="chrome"), ChromeBrowser(get_sora_rest_adapter(), browser_name="chrome2"), ChromeBrowser(get_sora_rest_adapter(), browser_name="chrome3")]

@@ -1,3 +1,4 @@
+import threading
 import time
 from abc import ABC
 from typing import Optional, List
@@ -14,6 +15,7 @@ class BaseBrowser(ABC):
 
     def __init__(self):
         self.driver = None
+        self.use_lock = threading.Lock()
 
     def wait_presence(self, xpath: str, timeout: int = 3) -> bool:
         """Wait for element presence with explicit typing and error handling."""

@@ -1,4 +1,5 @@
 import random
+import threading
 import time
 from typing import Optional
 
@@ -17,10 +18,10 @@ from src.integration.infrastructure.sora.llm_provider.utils.browser_utils import
 
 
 class ChromeBrowser(BaseBrowser):
-    def __init__(self, rest_adapter: SoraRestAdapter, proxy: Optional[str] = None):
+    def __init__(self, rest_adapter: SoraRestAdapter, proxy: Optional[str] = None, browser_name: str | None = None):
         super().__init__()
         self.rest_adapter = rest_adapter
-        self.browser_name = "chrome"
+        self.browser_name = browser_name or "chrome"
         self.chrome_config = CONFIG[self.browser_name]
         self.use_undetected = True
         self.user_data_dir, self.profile_directory = get_profile_paths(
